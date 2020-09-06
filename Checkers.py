@@ -3,14 +3,15 @@ class Checkers():
     def __init__(self,board_width):
         self.board_width = board_width
         self.board = []
+        self.turn = 1
+        self.reward = 0
+        self.P1list = {}
+        self.P2list = {}
 
     def GameInitiate(self):
         for h in range(self.board_width):
             for w in range(self.board_width):
-                self.board.append("0")
-        counter1 = 0
-        counter2 = 0
-        counter3 = 0
+                self.board.append(0)
         for a in range(3):
             row = a * self.board_width
             b = 0
@@ -19,7 +20,9 @@ class Checkers():
             for i in range(self.board_width):
                 i += row
                 if i % 2 == 0:
-                    self.board[i+b] = 1
+                    pos = i+b
+                    self.board[pos] = 1
+                    self.P1list[pos] = self.PosToLoc(pos)
         for a in range(3):
             startingpoint = (self.board_width*self.board_width)-(3*self.board_width)
             row = a * self.board_width
@@ -29,7 +32,9 @@ class Checkers():
             for i in range(self.board_width):
                 i += row
                 if i % 2 == 0:
-                    self.board[startingpoint+i+b] = 2
+                    pos = startingpoint+i+b
+                    self.board[pos] = 2
+                    self.P2list[pos] = self.PosToLoc(pos)
     def PrintBoard(self):
         print("")
         print("   ",end="")
@@ -40,30 +45,129 @@ class Checkers():
                 print(end="\n")
                 print(str(int(i/self.board_width)),end=". ")
             print(self.board[i],end=" ")
+    def PosToLoc(self,pos):
+        return [pos - (self.board_width*int(pos/self.board_width)),int(pos/self.board_width)]
+
+    def UpdateLocs(self,prevloc,futureloc,P):
+        if P == 1:
+            self.P1list.pop(prevloc)
+            self.P1list[prevloc] = self.PosToLoc(futureloc)
+        if P == 2:
+            self.P1list.pop(prevloc)
+            self.P1list[prevloc] = self.PosToLoc(futureloc)
+
     def Move(self,loc,action):
         cords = loc[0] + (loc[1] * self.board_width)
-        print(self.board[cords])
         P1 = True
         if(self.board[cords] == 2):
             P1 = False
-        if action == 1:
-            self.board[cords] = 0
+        if action == 2:
             if P1 == True:
-                self.board[(cords + self.board_width) + 1] = 1
+                if self.turn == 1:
+                    if(int(self.board[(cords + self.board_width) + 1]) == 2):
+                        self.board[cords] = 0
+                        self.board[(cords + self.board_width) + 1] = 0
+                        self.board[(cords + (self.board_width*2)) + 2] = 1
+                        self.turn = 2
+                        self.UpdateLocs(cords,(cords + (self.board_width*2)) + 2,1)
+                    elif(int(self.board[(cords + self.board_width) + 1]) == 0):
+                        self.board[cords] = 0
+                        self.board[(cords + self.board_width) + 1] = 1
+                        self.turn = 2
+                        self.UpdateLocs(cords,(cords + self.board_width) + 1,1)
+                    else:
+                        print("Cant move Their")
+                        print("Tried to move to ",self.board[(cords - self.board_width) + 1])
+                else:
+                    print("Not you're turn")
             elif P1 == False:
-                self.board[(cords - self.board_width) + 1] = 2
-        elif action == 2:
-            self.board[cords] = 0
+                if self.turn == 2:
+                    if(int(self.board[(cords - self.board_width) + 1]) == 1):
+                        self.board[cords] = 0
+                        self.board[(cords - self.board_width) + 1] = 0
+                        self.board[(cords - (self.board_width*2)) + 2] = 2
+                        self.turn = 1
+                        self.UpdateLocs(cords,cords - (self.board_width*2) + 2,2)
+                        
+                    elif(int(self.board[(cords - self.board_width) + 1]) == 0):
+                        self.board[cords] = 0
+                        self.board[(cords - self.board_width) + 1] = 2
+                        self.turn = 1
+                        self.UpdateLocs(cords,(cords - self.board_width) + 1,2)
+                    else:
+                        print("Cant move Their")
+                        print("Tried to move to ",self.board[(cords - self.board_width) + 1])
+                else:
+                    print("Not you're turn")
+        elif action == 1:
             if P1 == True:
-                self.board[(cords + self.board_width) - 1] = 1
+                if self.turn == 1:
+                    if(int(self.board[(cords + self.board_width) - 1]) == 2):
+                        self.board[cords] = 0
+                        self.board[(cords + self.board_width) - 1] = 0
+                        self.board[(cords + self.board_width + self.board_width) - 2] = 1
+                        self.turn = 2
+                        self.UpdateLocs(cords,(cords + self.board_width) - 1,1)
+                    elif(int(self.board[(cords + self.board_width) - 1]) == 0):
+                        self.board[cords] = 0
+                        self.board[(cords + self.board_width) - 1] = 1
+                        self.turn = 2
+                        self.UpdateLocs(cords,(cords + self.board_width) - 1,1)
+                    else:
+                        print("Cant move Their")
+                        print("Tried to move to ",self.board[(cords - self.board_width) + 1])
+                else:
+                    print("Not you're turn")
             elif P1 == False:
-                self.board[(cords - self.board_width) - 1] = 2
+                if self.turn == 2:
+                    if(int(self.board[(cords - self.board_width) - 1]) == 1):
+                        self.board[cords] = 0
+                        self.board[(cords - self.board_width) - 1] = 0
+                        self.board[(cords - (self.board_width*2)) - 2] = 2
+                        self.turn = 1
+                        self.UpdateLocs(cords,cords - (self.board_width*2) - 2,2)
+                    elif(int(self.board[(cords - self.board_width) - 1]) == 0):
+                        self.board[cords] = 0
+                        self.board[(cords - self.board_width) - 1] = 2
+                        self.turn = 1
+                        self.UpdateLocs(cords,(cords - self.board_width) - 1,2)
+                        
+                    else:
+                        print("Cant move Their")
+                        print("Tried to move to ",self.board[(cords - self.board_width) + 1])
+                else:
+                    print("Not you're turn")
+    def CheckWin(self):
+        P1 = 0
+        P2 = 0
+        for i in self.board:
+            if int(i) == 1:
+                P1 += 1
+            elif int(i) == 2:
+                P2 +=1
+        if P2 == 0:
+            return "P1 Won"
+        elif P1 == 0:
+            return "P1 lost"
+        else:
+            return ""
+    #def DiscoverMoves(self,P1)
 
-game = Checkers(10)
+game = Checkers(8)
 game.GameInitiate()
 game.PrintBoard()
-game.Move([3,2],1)
-game.PrintBoard()
+while True:
+    print("")
+    X = input("X: ")
+    Y = input("Y: ")
+    Action = input("Action: ")
+    if(Action != 3):
+        print(game.P1list)
+        game.Move([int(X),int(Y)],int(Action))
+        game.PrintBoard()
+        print(game.CheckWin())
+        print(game.P1list)
+
 
 
 
