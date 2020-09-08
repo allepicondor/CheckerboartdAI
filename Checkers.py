@@ -7,7 +7,6 @@ class Checkers():
         self.reward = 0
         self.P1list = {}
         self.P2list = {}
-
     def GameInitiate(self):
         for h in range(self.board_width):
             for w in range(self.board_width):
@@ -47,30 +46,34 @@ class Checkers():
             print(self.board[i],end=" ")
     def PosToLoc(self,pos):
         return [pos - (self.board_width*int(pos/self.board_width)),int(pos/self.board_width)]
-
     def UpdateLocs(self,prevloc,futureloc,P):
         if P == 1:
             self.P1list.pop(prevloc)
-            self.P1list[prevloc] = self.PosToLoc(futureloc)
+            self.P1list[futureloc] = self.PosToLoc(futureloc)
         if P == 2:
-            self.P1list.pop(prevloc)
-            self.P1list[prevloc] = self.PosToLoc(futureloc)
-
+            self.P2list.pop(prevloc)
+            self.P2list[futureloc] = self.PosToLoc(futureloc)
+    def GetColoum(self,pos):
+        return pos - (self.board_width*int(pos/self.board_width))
     def Move(self,loc,action):
         cords = loc[0] + (loc[1] * self.board_width)
+        startcoloum = self.GetColoum(cords)
+        if(self.board[cords] == 0):
+            return
         P1 = True
         if(self.board[cords] == 2):
             P1 = False
         if action == 2:
             if P1 == True:
                 if self.turn == 1:
-                    if(int(self.board[(cords + self.board_width) + 1]) == 2):
+
+                    if(int(self.board[(cords + self.board_width) + 1]) == 2) and (self.GetColoum((cords + (self.board_width*2)) + 2) == startcoloum -1 or self.GetColoum((cords + (self.board_width*2)) + 2) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords + self.board_width) + 1] = 0
                         self.board[(cords + (self.board_width*2)) + 2] = 1
                         self.turn = 2
                         self.UpdateLocs(cords,(cords + (self.board_width*2)) + 2,1)
-                    elif(int(self.board[(cords + self.board_width) + 1]) == 0):
+                    elif(int(self.board[(cords + self.board_width) + 1]) == 0) and (self.GetColoum((cords + self.board_width) + 1) == startcoloum -1 or self.GetColoum((cords + self.board_width) + 1) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords + self.board_width) + 1] = 1
                         self.turn = 2
@@ -82,14 +85,14 @@ class Checkers():
                     print("Not you're turn")
             elif P1 == False:
                 if self.turn == 2:
-                    if(int(self.board[(cords - self.board_width) + 1]) == 1):
+                    if(int(self.board[(cords - self.board_width) + 1]) == 1) and (self.GetColoum((cords + (self.board_width*2)) + 2) == startcoloum -2 or self.GetColoum((cords + (self.board_width*2)) + 2) == startcoloum +2):
                         self.board[cords] = 0
                         self.board[(cords - self.board_width) + 1] = 0
                         self.board[(cords - (self.board_width*2)) + 2] = 2
                         self.turn = 1
                         self.UpdateLocs(cords,cords - (self.board_width*2) + 2,2)
                         
-                    elif(int(self.board[(cords - self.board_width) + 1]) == 0):
+                    elif(int(self.board[(cords - self.board_width) + 1]) == 0) and (self.GetColoum((cords + self.board_width) + 1) == startcoloum -1 or self.GetColoum((cords + self.board_width) + 1) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords - self.board_width) + 1] = 2
                         self.turn = 1
@@ -102,13 +105,13 @@ class Checkers():
         elif action == 1:
             if P1 == True:
                 if self.turn == 1:
-                    if(int(self.board[(cords + self.board_width) - 1]) == 2):
+                    if(int(self.board[(cords + self.board_width) - 1]) == 2) and (self.GetColoum((cords + (self.board_width*2)) - 2) == startcoloum -1 or self.GetColoum((cords + (self.board_width*2)) - 2) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords + self.board_width) - 1] = 0
                         self.board[(cords + self.board_width + self.board_width) - 2] = 1
                         self.turn = 2
                         self.UpdateLocs(cords,(cords + self.board_width) - 1,1)
-                    elif(int(self.board[(cords + self.board_width) - 1]) == 0):
+                    elif(int(self.board[(cords + self.board_width) - 1]) == 0) and (self.GetColoum((cords + self.board_width) - 1) == startcoloum -1 or self.GetColoum((cords + self.board_width) - 1) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords + self.board_width) - 1] = 1
                         self.turn = 2
@@ -120,7 +123,7 @@ class Checkers():
                     print("Not you're turn")
             elif P1 == False:
                 if self.turn == 2:
-                    if(int(self.board[(cords - self.board_width) - 1]) == 1):
+                    if(int(self.board[(cords - self.board_width) - 1]) == 1) and (self.GetColoum((cords + (self.board_width*2)) - 2) == startcoloum -1 or self.GetColoum((cords + (self.board_width*2)) - 2) == startcoloum +1):
                         self.board[cords] = 0
                         self.board[(cords - self.board_width) - 1] = 0
                         self.board[(cords - (self.board_width*2)) - 2] = 2
@@ -151,22 +154,22 @@ class Checkers():
             return "P1 lost"
         else:
             return ""
-    #def DiscoverMoves(self,P1)
+    def DiscoverMoves(self,P):
+        print()
 
 game = Checkers(8)
 game.GameInitiate()
 game.PrintBoard()
+print(game.GetColoum(10))
 while True:
     print("")
     X = input("X: ")
     Y = input("Y: ")
     Action = input("Action: ")
     if(Action != 3):
-        print(game.P1list)
         game.Move([int(X),int(Y)],int(Action))
         game.PrintBoard()
         print(game.CheckWin())
-        print(game.P1list)
 
 
 
