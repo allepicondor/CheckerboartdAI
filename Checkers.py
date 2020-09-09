@@ -155,7 +155,9 @@ class Checkers():
         else:
             return ""
     def DiscoverMoves(self,P):
-        print()
+        if P == 1:
+            
+        
 
 game = Checkers(8)
 game.GameInitiate()
