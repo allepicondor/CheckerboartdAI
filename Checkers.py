@@ -154,8 +154,20 @@ class Checkers():
             return "P1 lost"
         else:
             return ""
-    def DiscoverMoves(self,P):
-        if P == 1:
+    def getState(self):
+        state = []
+        print(self.board)
+        b= 0
+        for i in range(len(self.board)):
+            if i % 8 == 0:
+                if b == 0:
+                    b=1
+                else:
+                    b=0
+            if i%2 == 0:
+                state.append(self.board[i+b])
+        return state
+
             
         
 
@@ -163,6 +175,7 @@ game = Checkers(8)
 game.GameInitiate()
 game.PrintBoard()
 print(game.GetColoum(10))
+print(game.CheckWin())
 while True:
     print("")
     X = input("X: ")
@@ -172,6 +185,7 @@ while True:
         game.Move([int(X),int(Y)],int(Action))
         game.PrintBoard()
         print(game.CheckWin())
+    print(game.getState())
 
 
 
