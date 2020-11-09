@@ -168,9 +168,6 @@ class Checkers():
                 state.append(self.board[i+b])
         return state
 
-            
-        
-
 game = Checkers(8)
 game.GameInitiate()
 game.PrintBoard()
